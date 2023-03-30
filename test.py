@@ -7,8 +7,8 @@ import os
 # the file is a base64 encoded audio file of a few people talking about the moonlanding
 # the morning after it happened (1969)
 
-# open uploads/textbase64.txt and save to a var
-with open('uploads/textbase64.txt', 'r') as f:
+# open uploads/textbase64audio.txt and save to a var
+with open('uploads/testbase64audio.txt', 'r') as f:
     base64file = f.read()
 
 model_payload = {
