@@ -138,9 +138,11 @@ def inference(model_inputs: dict) -> dict:
     # TODO: check if file is right format
     base64file = base64file.split(',')[1]
     file_data = base64.b64decode(base64file)
-    _, file_ending = os.path.splitext(f'{filepath}')
+    file_start, file_ending = os.path.splitext(f'{filename}')
+
     ts = time.time()
-    filename = f'{ts}-{filename}{file_ending}'
+    ts = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
+    filename = f'{ts}-{file_start}{file_ending}'
     with open(os.path.join('uploads', filename), 'wb') as f:
         f.write(file_data)
 

@@ -4,6 +4,7 @@
 # Instead, edit the init() and inference() functions in app.py
 
 from sanic import Sanic, response
+from sanic_cors import CORS, cross_origin
 import subprocess
 import app as user_src
 
@@ -13,6 +14,7 @@ user_src.init()
 
 # Create the http server app
 server = Sanic("my_app")
+CORS(server)
 
 # Healthchecks verify that the environment is correct on Banana Serverless
 @server.route('/healthcheck', methods=["GET"])
