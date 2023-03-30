@@ -44,24 +44,24 @@ def speech_to_text(filepath, whisper_model, num_speakers, prompt):
         print("-----starting conversion to wav-----")
         os.system(
             f'ffmpeg -i "{filepath}" -ar 16000 -ac 1 -c:a pcm_s16le "{audio_file_wav}"')
-
-        # Get duration
-        with contextlib.closing(wave.open(audio_file_wav, 'r')) as f:
-            frames = f.getnframes()
-            rate = f.getframerate()
-            duration = frames / float(rate)
-        print(f"conversion to wav ready, duration of audio file: {duration}")
-
-        # Transcribe audio
-        print("starting whisper")
-        options = dict(beam_size=5, best_of=5)
-        transcribe_options = dict(task="transcribe", **options)
-        result = model.transcribe(
-            audio_file_wav, **transcribe_options, initial_prompt=prompt)
-        segments = result["segments"]
-        print("done with whisper")
     except Exception as e:
         raise RuntimeError("Error converting audio")
+
+    # Get duration
+    with contextlib.closing(wave.open(audio_file_wav, 'r')) as f:
+        frames = f.getnframes()
+        rate = f.getframerate()
+        duration = frames / float(rate)
+    print(f"conversion to wav ready, duration of audio file: {duration}")
+
+    # Transcribe audio
+    print("starting whisper")
+    options = dict(beam_size=5, best_of=5)
+    transcribe_options = dict(task="transcribe", **options)
+    result = model.transcribe(
+        audio_file_wav, **transcribe_options, initial_prompt=prompt)
+    segments = result["segments"]
+    print("done with whisper")
 
     try:
         # Create embedding
@@ -130,11 +130,13 @@ def inference(model_inputs: dict) -> dict:
     global embedding_model
 
     # Parse out your arguments
-    filename = model_inputs.get('filename', 'somefile.mp3')
+    filename = model_inputs.get('filename', '')
     prompt = model_inputs.get('prompt', 'an audio')
     base64file = model_inputs.get('file', None)
-    if base64file == None:
-        return {'message': "No input provided"}
+    number_speakers = model_inputs.get('num_speakers', 2)
+
+    if base64file == None or base64file == '' or filename == '':
+        return {'message': "No correct input provided"}
     # TODO: check if file is right format
     base64file = base64file.split(',')[1]
     file_data = base64.b64decode(base64file)
@@ -143,12 +145,11 @@ def inference(model_inputs: dict) -> dict:
     ts = time.time()
     ts = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
     filename = f'{ts}-{file_start}{file_ending}'
-    with open(os.path.join('uploads', filename), 'wb') as f:
+    with open(filename, 'wb') as f:
         f.write(file_data)
 
-    number_speakers = model_inputs.get('num_speakers', 2)
-
-    filepath = f'uploads/{filename}'
+    # filepath = f'uploads/{filename}'
+    filepath = filename
 
     transcription_df = speech_to_text(
         filepath, model_name, number_speakers, prompt)
