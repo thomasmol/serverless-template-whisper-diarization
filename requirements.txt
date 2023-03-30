@@ -4,7 +4,9 @@ transformers==4.25.1
 accelerate==0.15.0
 ffmpeg-python==0.2.0
 pandas==1.5.0
-pytube==12.1.0
+torch==1.13.0
+torchtext==0.14.0
+torchvision==0.14.0
 sacremoses==0.0.53
 sentencepiece==0.1.97
 tokenizers==0.13.2

@@ -8,8 +8,6 @@ import datetime
 import contextlib
 import numpy as np
 import pandas as pd
-from io import BytesIO
-from pytube import YouTube
 from pyannote.audio import Audio
 from pyannote.core import Segment
 from sklearn.cluster import AgglomerativeClustering
