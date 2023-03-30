@@ -56,7 +56,8 @@ def speech_to_text(filepath, whisper_model, num_speakers, prompt):
         print("starting whisper")
         options = dict(beam_size=5, best_of=5)
         transcribe_options = dict(task="transcribe", **options)
-        result = model.transcribe(audio_file_wav, **transcribe_options, initial_prompt=prompt)
+        result = model.transcribe(
+            audio_file_wav, **transcribe_options, initial_prompt=prompt)
         segments = result["segments"]
         print("done with whisper")
     except Exception as e:
@@ -129,17 +130,19 @@ def inference(model_inputs: dict) -> dict:
     global embedding_model
 
     # Parse out your arguments
-    filename = model_inputs.get('filename', 'somefile')
-    prompt = model_inputs.get('filename', 'an audio')
+    filename = model_inputs.get('filename', 'somefile.mp3')
+    prompt = model_inputs.get('prompt', 'an audio')
     base64file = model_inputs.get('file', None)
     if base64file == None:
         return {'message': "No input provided"}
     # TODO: check if file is right format
     base64file = base64file.split(',')[1]
     file_data = base64.b64decode(base64file)
+    _, file_ending = os.path.splitext(f'{filepath}')
     ts = time.time()
+    filename = f'{ts}-{filename}{file_ending}'
     with open(os.path.join('uploads', filename), 'wb') as f:
-            f.write(file_data)
+        f.write(file_data)
 
     number_speakers = model_inputs.get('num_speakers', 2)
 
