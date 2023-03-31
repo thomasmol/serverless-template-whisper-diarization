@@ -90,24 +90,24 @@ def speech_to_text(filepath, whisper_model, num_speakers, prompt):
 
         # Make output
         objects = {
-            'Start': [],
-            'End': [],
-            'Speaker': [],
-            'Text': []
+            'start': [],
+            'end': [],
+            'speaker': [],
+            'text': []
         }
         text = ''
         for (i, segment) in enumerate(segments):
             if i == 0 or segments[i - 1]["speaker"] != segment["speaker"]:
-                objects['Start'].append(str(convert_time(segment["start"])))
-                objects['Speaker'].append(segment["speaker"])
+                objects['start'].append(str(convert_time(segment["start"])))
+                objects['speaker'].append(segment["speaker"])
                 if i != 0:
-                    objects['End'].append(
+                    objects['end'].append(
                         str(convert_time(segments[i - 1]["end"])))
-                    objects['Text'].append(text)
+                    objects['text'].append(text)
                     text = ''
             text += segment["text"] + ' '
-        objects['End'].append(str(convert_time(segments[i - 1]["end"])))
-        objects['Text'].append(text)
+        objects['end'].append(str(convert_time(segments[i - 1]["end"])))
+        objects['text'].append(text)
 
         print("done with embedding")
         time_end = time.time()
