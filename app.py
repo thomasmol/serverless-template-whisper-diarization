@@ -1,5 +1,6 @@
 import os
 import time
+import json
 import wave
 import torch
 import base64
@@ -159,4 +160,8 @@ def inference(model_inputs: dict) -> dict:
     os.remove(filepath)
     print(f'{filepath} removed, done with inference')
     # Return the results as a dictionary
-    return transcription_df.to_json()
+    # Convert DataFrame to list of dictionaries
+    result_list = transcription_df.to_dict('records')
+
+    # Return the results as a JSON object
+    return json.dumps(result_list)
