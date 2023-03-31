@@ -87,25 +87,15 @@ def speech_to_text(filepath, whisper_model, num_speakers, prompt):
             segments[i]["speaker"] = 'SPEAKER ' + str(labels[i] + 1)
 
         # Make output
-        objects = {
-            'start': [],
-            'end': [],
-            'speaker': [],
-            'text': []
-        }
-        text = ''
-        for (i, segment) in enumerate(segments):
-            if i == 0 or segments[i - 1]["speaker"] != segment["speaker"]:
-                objects['start'].append(str(convert_time(segment["start"])))
-                objects['speaker'].append(segment["speaker"])
-                if i != 0:
-                    objects['end'].append(
-                        str(convert_time(segments[i - 1]["end"])))
-                    objects['text'].append(text)
-                    text = ''
-            text += segment["text"] + ' '
-        objects['end'].append(str(convert_time(segments[i - 1]["end"])))
-        objects['text'].append(text)
+        output = []  # Initialize an empty list for the output
+        for segment in segments:
+            # Append the segment to the output list
+            output.append({
+                'start': str(convert_time(segment["start"])),
+                'end': str(convert_time(segment["end"])),
+                'speaker': segment["speaker"],
+                'text': segment["text"]
+            })
 
         print("done with embedding")
         time_end = time.time()
@@ -114,7 +104,7 @@ def speech_to_text(filepath, whisper_model, num_speakers, prompt):
         system_info = f"""-----Processing time: {time_diff:.5} seconds-----"""
         print(system_info)
         os.remove(audio_file_wav)
-        return pd.DataFrame(objects)
+        return output
 
     except Exception as e:
         os.remove(audio_file_wav)
@@ -136,7 +126,7 @@ def inference(model_inputs: dict) -> dict:
 
     if base64file == None or base64file == '' or filename == '':
         return {'message': "No correct input provided"}
-    
+
     # TODO: check if file is right format
     base64file = base64file.split(',')[1]
     file_data = base64.b64decode(base64file)
@@ -151,16 +141,11 @@ def inference(model_inputs: dict) -> dict:
     # filepath = f'uploads/{filename}'
     filepath = filename
 
-    transcription_df = speech_to_text(
+    transcription = speech_to_text(
         filepath, model_name, number_speakers, prompt)
     # print for testing
-    print(transcription_df)
+    print(transcription)
 
     os.remove(filepath)
     print(f'{filepath} removed, done with inference')
-    # Return the results as a dictionary
-    # Convert DataFrame to list of dictionaries
-    result_list = transcription_df.to_dict('records')
-
-    # Return the results as a JSON object
-    return json.dumps(result_list)
+    return transcription
