@@ -16,8 +16,6 @@ from pyannote.audio.pipelines.speaker_verification import PretrainedSpeakerEmbed
 
 # Init is ran on server startup
 # Load your model to GPU as a global variable here using the variable name "model"
-
-
 def init():
     global model
     global model_name
@@ -138,6 +136,7 @@ def inference(model_inputs: dict) -> dict:
 
     if base64file == None or base64file == '' or filename == '':
         return {'message': "No correct input provided"}
+    
     # TODO: check if file is right format
     base64file = base64file.split(',')[1]
     file_data = base64.b64decode(base64file)
