@@ -127,8 +127,9 @@ def inference(model_inputs: dict) -> dict:
     if base64file == None or base64file == '' or filename == '':
         return {'message': "No correct input provided"}
 
-    # TODO: check if file is right format
-    base64file = base64file.split(',')[1]
+    # TODO: check if file is right format, can also be done in frontend
+    base64file = base64file.split(',')[1] if ',' in base64file else base64file
+
     file_data = base64.b64decode(base64file)
     file_start, file_ending = os.path.splitext(f'{filename}')
 
